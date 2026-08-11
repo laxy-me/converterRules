@@ -1,0 +1,24 @@
+# 办公协作类：Atlassian(Jira/Confluence) + Slack
+#
+# 单独分组的原因：这两者是交互式应用，一次页面加载要向多个子域发起连接，
+# 体验由「握手延迟」而非带宽决定，因此值得单独指定低延迟线路，
+# 而不是跟着兜底组走。
+#
+# 注意：选线路请以真实目标实测为准，不要照搬测速面板的延迟排名 ——
+# 实测中延迟排名最靠前的线路，访问本组域名时反而抖动剧烈。
+
+# ---- Atlassian ----
+DOMAIN-SUFFIX,atlassian.net
+DOMAIN-SUFFIX,atlassian.com
+DOMAIN-SUFFIX,atl-paas.net
+DOMAIN-SUFFIX,atlassian.io
+DOMAIN-SUFFIX,trello.com
+
+# ---- Slack ----
+DOMAIN-SUFFIX,slack.com
+DOMAIN-SUFFIX,slack-edge.com
+DOMAIN-SUFFIX,slack-imgs.com
+DOMAIN-SUFFIX,slack-msgs.com
+DOMAIN-SUFFIX,slack-files.com
+DOMAIN-SUFFIX,slack-core.com
+DOMAIN-SUFFIX,slackb.com
