@@ -1,0 +1,18 @@
+# 被广告规则误伤、需要放行的域名（ini 里对应 🎯 全球直连）
+#
+# ⚠️ 本清单在 laxy_external_config.ini 里必须排在 🛑 全球拦截 之前。
+# Clash 规则按顺序首条命中，排在后面等于没写 —— 2025-12-05 写进 other.list 的
+# DOMAIN-SUFFIX,adjust.com,DIRECT 就是这样从未生效：NobyDa AdRule.list 里有
+# DOMAIN-SUFFIX,adjust.com，排在前面，请求先被 REJECT 了。
+#
+# 另：清单里只写匹配条件，不带策略。策略由 ini 的 ruleset= 决定，
+# 多写的 ,DIRECT 会被当成多余参数，并不会直连。
+#
+# 内网 DNS（AdGuard Home）要同步放行，否则域名先被解析成 0.0.0.0，连接到不了这里。
+
+# ---- Adjust 文档 / 官网（2026-10-16）----
+# 只放行文档与官网，s2s / view / analytics 等追踪子域仍由 AdRule 拦截
+DOMAIN-SUFFIX,help.adjust.com
+DOMAIN-SUFFIX,dev.adjust.com
+DOMAIN-SUFFIX,www.adjust.com
+DOMAIN,adjust.com
