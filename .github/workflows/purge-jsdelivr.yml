@@ -1,23 +1,33 @@
-# 推送后刷新 jsDelivr 缓存。
+# 推送后发布新版本并刷新 jsDelivr 缓存。
 #
 # 订阅转换（subconverter）跑在阿里云上海的 ECS 上，raw.githubusercontent.com 在大陆被墙，
-# 所以 ini 和清单都改成经 cdn.jsdelivr.net 拉取。jsDelivr 对 @master 这类分支地址最长缓存 12 小时，
-# 不主动刷新的话，改了规则要等半天才生效。
-name: Purge jsDelivr cache
+# 所以 ini 和清单都经 cdn.jsdelivr.net 拉取。jsDelivr 对分支地址（@master）最长缓存 12 小时，
+# 而 purge 只对 semver 版本生效，所以本仓库的文件一律用 @latest 引用：
+# 每次推送打一个新 tag（1.<run_number>.<run_attempt>），再刷新 @latest，改动一分钟内生效。
+name: Release & purge jsDelivr
 
 on:
   push:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  purge:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Purge all .ini / .list files
+      - name: Tag
+        run: |
+          tag="1.${GITHUB_RUN_NUMBER}.${GITHUB_RUN_ATTEMPT}"
+          git tag "$tag"
+          git push origin "$tag"
+          echo "tag=$tag"
+      - name: Purge @latest
         run: |
           for f in $(git ls-files '*.ini' '*.list'); do
             echo "== $f"
-            curl -fsS --retry 3 "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@master/${f}" | grep -o '"status": *"[a-z]*"'
+            curl -fsS --retry 3 "https://purge.jsdelivr.net/gh/${GITHUB_REPOSITORY}@latest/${f}" | grep -o '"status": *"[a-z]*"'
           done
