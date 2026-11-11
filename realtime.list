@@ -1,0 +1,23 @@
+# 实时音视频（通话）直连（ini 里对应 🎯 全球直连）
+#
+# 通话的语音、视频走 UDP，经代理节点会多绕一段，抖动和丢包都变大；自动组一换节点，出口 IP 跟着变，
+# 正在进行的通话就得重连。下面这些服务国内直连可达，厂商也明确建议绕开 VPN 和代理。
+#
+# ⚠️ 家里的 mihomo 2026-11-06 起把没命中规则的国外 STUN/TURN 端口（3478、5349、19302-19309）
+#   送进 🐟 漏网之鱼（home-network 仓库 mihomo/merge.py），防网页的 WebRTC 问出家里的真实地址。
+#   通话软件的媒体服务器也用这些端口，要在这里先放行，否则通话被一起送进代理。
+#   代价：拿这些服务器当 STUN 的网页能问出真实地址（一般网页不会这么做）。
+#
+# 清单里只写匹配条件，不带策略（策略由 ini 的 ruleset= 决定）。
+
+# ---- Slack 抱团（huddles）= Amazon Chime SDK（2026-11-11）----
+# 用户实测：通话经代理卡，🔰 节点选择 临时改成直连就好了。家里当时语音走 UDP 3478，命中上面那条
+# STUN/TURN 规则，经 Relay-JP2 出去。
+# Slack 的要求：*.chime.aws、99.77.128.0/18，UDP 3478（旧版用 22466）和 TCP 443，绕开 VPN 和代理：
+#   https://slack.com/help/articles/36284146785427
+# IPv6 段见 Chime SDK 文档，和 AWS ip-ranges.json 里 CHIME_MEETINGS 的两段一致（2026-11-10 版）：
+#   https://docs.aws.amazon.com/chime-sdk/latest/dg/network-config.html
+# 媒体是裸 UDP，嗅探不出域名，只能按 IP 匹配；信令和 TLS 兜底走 443，靠嗅探出的 *.chime.aws 匹配。
+DOMAIN-SUFFIX,chime.aws
+IP-CIDR,99.77.128.0/18,no-resolve
+IP-CIDR6,2600:f0f0:4100::/40,no-resolve
